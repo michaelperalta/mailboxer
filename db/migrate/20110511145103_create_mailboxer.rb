@@ -22,6 +22,8 @@ class CreateMailboxer < ActiveRecord::Migration
     create_table :mailboxer_notifications do |t|
       t.column :type, :string
       t.column :body, :text
+      t.column :lat, :text
+      t.column :long, :text
       t.column :subject, :string, :default => ""
       t.references :sender, :polymorphic => true
       t.column :conversation_id, :integer
