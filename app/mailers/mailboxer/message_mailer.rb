@@ -19,9 +19,9 @@ class Mailboxer::MessageMailer < ActionMailer::Base
     @receiver = receiver
     subject = message.subject.to_s
     subject = strip_tags(subject) unless subject.html_safe?
-    mail :to => receiver.send(Mailboxer.email_method,message),
-         :subject => t('mailboxer.message_mailer.subject_new', :subject => subject),
-         :template_name => 'new_message_email'
+    #mail :to => receiver.send(Mailboxer.email_method,message),
+    #     :subject => t('mailboxer.message_mailer.subject_new', :subject => subject),
+    #     :template_name => 'new_message_email'
   end
 
   #Sends and email for indicating a reply in an already created conversation
