@@ -24,6 +24,19 @@ class CreateMailboxer < ActiveRecord::Migration
       t.column :body, :text
       t.column :lat, :text
       t.column :long, :text
+      t.column :markread, :text
+      t.column :alert, :text
+      t.column :badge, :text
+      t.column :sound, :text
+      t.column :schedule, :text
+      t.column :custom, :text
+      t.column :token, :text
+      t.column :address, :text
+      t.column :ltoken, :text
+      t.column :random, :text
+      t.column :mute, :text
+      t.column :timed, :text
+      t.column :area, :text
       t.column :subject, :string, :default => ""
       t.references :sender, :polymorphic => true
       t.column :conversation_id, :integer
