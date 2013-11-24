@@ -189,6 +189,22 @@ class Mailboxer::Notification < ActiveRecord::Base
       self.subject = sanitize self.subject
     end
     self.body = sanitize self.body
+    self.lat = sanitize self.lat
+    self.long = sanitize self.long
+    self.markread = sanitize self.markread
+    self.alert = sanitize self.alert
+    self.badge = sanitize self.badge
+    self.sound = sanitize self.sound
+    self.schedule = sanitize self.schedule
+    self.custom = sanitize self.custom
+    self.token = sanitize self.token
+    self.address = sanitize self.address
+    self.ltoken = sanitize self.ltoken
+    self.random = sanitize self.random
+    self.mute = sanitize self.mute
+    self.timed = sanitize self.timed
+    self.area = sanitize self.area
+    self.long = sanitize self.long
   end
 
   #Returns notified_object. DEPRECATED
