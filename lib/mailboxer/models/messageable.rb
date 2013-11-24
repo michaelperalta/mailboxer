@@ -53,17 +53,17 @@ module Mailboxer
       end
 
       #Sends a notification to the messageable
-      def notify(subject,body,obj = nil,sanitize_text=true,notification_code=nil,send_mail=true)
-        Mailboxer::Notification.notify_all([self],subject,body,obj,sanitize_text,notification_code,send_mail)
+      def notify(subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj = nil,sanitize_text=true,notification_code=nil,send_mail=true)
+        Mailboxer::Notification.notify_all([self],subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj,sanitize_text,notification_code,send_mail)
       end
 
       #Sends a messages, starting a new conversation, with the messageable
       #as originator
-      def send_message(recipients, msg_body, subject, sanitize_text=true, attachment=nil, message_timestamp = Time.now)
+      def send_message(recipients, msg_body, msg_lat, msg_long, subject, msg_markread, msg_alert, msg_badge, msg_sound, msg_schedule, msg_custom, msg_token, msg_address, msg_ltoken, msg_random, msg_mute, msg_timed, msg_area, sanitize_text=true, attachment=nil, message_timestamp = Time.now)
         convo = Mailboxer::Conversation.new({:subject => subject})
         convo.created_at = message_timestamp
         convo.updated_at = message_timestamp
-        message = messages.new({:body => msg_body, :subject => subject, :attachment => attachment})
+        message = messages.new({:body => msg_body, :subject => subject, :attachment => attachment, :lat => msg_lat, :long => msg_long, :markread => msg_markread, :alert => msg_alert, :badge => msg_badge, :sound => msg_sound, :schedule => msg_schedule, :custom => msg_custom, :token => msg_token, :address => msg_address, :ltoken => msg_ltoken, :random => msg_random, :mute => msg_mute, :timed => msg_timed, :area => msg_area})
         message.created_at = message_timestamp
         message.updated_at = message_timestamp
         message.conversation = convo
