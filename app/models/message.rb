@@ -35,7 +35,7 @@ class Message < Notification
 
     temp_receipts.each(&:valid?)
     if temp_receipts.all? { |t| t.errors.empty? }
-      temp_receipts.each(&:save!)         #Save receipts
+      temp_receipts.each(&:save!) 	#Save receipts
       #Should send an email?
       if Mailboxer.uses_emails
         if Mailboxer.mailer_wants_array

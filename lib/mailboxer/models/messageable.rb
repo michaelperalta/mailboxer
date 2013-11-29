@@ -3,7 +3,7 @@ module Mailboxer
     module Messageable
       extend ActiveSupport::Concern
 
-      module ActiveRecordExtension
+      module ActiveRecord
         #Converts the model into messageable allowing it to interchange messages and
         #receive notifications
         def acts_as_messageable
@@ -11,14 +11,13 @@ module Mailboxer
         end
       end
 
-
       included do
-        has_many :messages, :class_name => "Mailboxer::Message", :as => :sender
+        has_many :messages, :as => :sender
         if Rails::VERSION::MAJOR == 4
-          has_many :receipts, -> { order 'created_at DESC' }, :class_name => "Mailboxer::Receipt", dependent: :destroy,     as: :receiver
+          has_many :receipts, -> { order 'created_at DESC' }, dependent: :destroy, as: :receiver
         else
           # Rails 3 does it this way
-          has_many :receipts, :order => 'created_at DESC',    :class_name => "Mailboxer::Receipt", :dependent => :destroy, :as => :receiver
+          has_many :receipts, :order => 'created_at DESC', :dependent => :destroy, :as => :receiver
         end
       end
 
@@ -47,20 +46,20 @@ module Mailboxer
 
       #Gets the mailbox of the messageable
       def mailbox
-        @mailbox = Mailboxer::Mailbox.new(self) if @mailbox.nil?
+        @mailbox = Mailbox.new(self) if @mailbox.nil?
         @mailbox.type = :all
         @mailbox
       end
 
       #Sends a notification to the messageable
-      def notify(subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj = nil,sanitize_text=true,notification_code=nil,send_mail=true)
-        Mailboxer::Notification.notify_all([self],subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj,sanitize_text,notification_code,send_mail)
+      def notify(subject, body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area,obj = nil,sanitize_text=true,notification_code=nil,send_mail=true)
+        Notification.notify_all([self],subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj,sanitize_text,notification_code,send_mail)
       end
 
       #Sends a messages, starting a new conversation, with the messageable
       #as originator
       def send_message(recipients, msg_body, msg_lat, msg_long, subject, msg_markread, msg_alert, msg_badge, msg_sound, msg_schedule, msg_custom, msg_token, msg_address, msg_ltoken, msg_random, msg_mute, msg_timed, msg_area, sanitize_text=true, attachment=nil, message_timestamp = Time.now)
-        convo = Mailboxer::Conversation.new({:subject => subject})
+        convo = Conversation.new({:subject => subject})
         convo.created_at = message_timestamp
         convo.updated_at = message_timestamp
         message = messages.new({:body => msg_body, :subject => subject, :attachment => attachment, :lat => msg_lat, :long => msg_long, :markread => msg_markread, :alert => msg_alert, :badge => msg_badge, :sound => msg_sound, :schedule => msg_schedule, :custom => msg_custom, :token => msg_token, :address => msg_address, :ltoken => msg_ltoken, :random => msg_random, :mute => msg_mute, :timed => msg_timed, :area => msg_area})
@@ -76,7 +75,7 @@ module Mailboxer
       #Use reply_to_sender, reply_to_all and reply_to_conversation instead.
       def reply(conversation, recipients, reply_body, reply_lat, reply_long, reply_markread, reply_alert, reply_badge, reply_sound, reply_schedule, reply_custom, reply_token, reply_address, reply_ltoken, reply_random, reply_mute, reply_timed, reply_area, subject=nil, sanitize_text=true, attachment=nil)
         subject = subject || "RE: #{conversation.subject}"
-        response = messages.new({:body => reply_body, :subject => subject, :attachment => attachment, :lat => reply_lat, :long => reply_long, :markread => msg_markread, :alert => msg_alert, :badge => msg_badge, :sound => msg_sound, :schedule => msg_schedule, :custom => msg_custom, :token => msg_token, :address => msg_address, :ltoken => msg_ltoken, :random => msg_random, :mute => msg_mute, :timed => msg_timed, :area => msg_area})
+        response = messages.new({:body => reply_body, :subject => subject, :attachment => attachment, :lat => reply_lat, :long => reply_long, :markread => reply_markread, :alert => reply_alert, :badge => reply_badge, :sound => reply_sound, :schedule => reply_schedule, :custom => reply_custom, :token => reply_token, :address => reply_address, :ltoken => reply_ltoken, :random => reply_random, :mute => reply_mute, :timed => reply_timed, :area => reply_area})
         response.conversation = conversation
         response.recipients = recipients.is_a?(Array) ? recipients : [recipients]
         response.recipients = response.recipients.uniq
@@ -116,11 +115,11 @@ module Mailboxer
       #* An array with any of them
       def mark_as_read(obj)
         case obj
-        when Mailboxer::Receipt
+        when Receipt
           obj.mark_as_read if obj.receiver == self
-        when Mailboxer::Message, Mailboxer::Notification
+        when Message, Notification
           obj.mark_as_read(self)
-        when Mailboxer::Conversation
+        when Conversation
           obj.mark_as_read(self)
         when Array
           obj.map{ |sub_obj| mark_as_read(sub_obj) }
@@ -137,11 +136,11 @@ module Mailboxer
       #* An array with any of them
       def mark_as_unread(obj)
         case obj
-        when Mailboxer::Receipt
+        when Receipt
           obj.mark_as_unread if obj.receiver == self
-        when Mailboxer::Message, Mailboxer::Notification
+        when Message, Notification
           obj.mark_as_unread(self)
-        when Mailboxer::Conversation
+        when Conversation
           obj.mark_as_unread(self)
         when Array
           obj.map{ |sub_obj| mark_as_unread(sub_obj) }
@@ -181,11 +180,11 @@ module Mailboxer
       #* An array with any of them
       def trash(obj)
         case obj
-        when Mailboxer::Receipt
+        when Receipt
           obj.move_to_trash if obj.receiver == self
-        when Mailboxer::Message, Mailboxer::Notification
+        when Message, Notification
           obj.move_to_trash(self)
-        when Mailboxer::Conversation
+        when Conversation
           obj.move_to_trash(self)
         when Array
           obj.map{ |sub_obj| trash(sub_obj) }
@@ -202,11 +201,11 @@ module Mailboxer
       #* An array with any of them
       def untrash(obj)
         case obj
-        when Mailboxer::Receipt
+        when Receipt
           obj.untrash if obj.receiver == self
-        when Mailboxer::Message, Mailboxer::Notification
+        when Message, Notification
           obj.untrash(self)
-        when Mailboxer::Conversation
+        when Conversation
           obj.untrash(self)
         when Array
           obj.map{ |sub_obj| untrash(sub_obj) }
@@ -214,7 +213,7 @@ module Mailboxer
       end
 
       def search_messages(query)
-        @search = Mailboxer::Receipt.search do
+        @search = Receipt.search do
           fulltext query
           with :receiver_id, self.id
         end

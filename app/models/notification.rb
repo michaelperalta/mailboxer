@@ -1,4 +1,3 @@
-
 class Notification < ActiveRecord::Base
   attr_accessor :recipients
   attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :expires if Mailboxer.protected_attributes?
