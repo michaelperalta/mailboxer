@@ -1,31 +1,39 @@
-class Mailboxer::Notification < ActiveRecord::Base
-  self.table_name = :mailboxer_notifications
 
+class Notification < ActiveRecord::Base
   attr_accessor :recipients
   attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :expires if Mailboxer.protected_attributes?
 
   belongs_to :sender, :polymorphic => :true
   belongs_to :notified_object, :polymorphic => :true
-  has_many :receipts, :dependent => :destroy, :class_name => "Mailboxer::Receipt"
+  has_many :receipts, :dependent => :destroy
 
   validates_presence_of :subject, :body
 
+  #after_create :deliver
+  
+  #private
+  
+  #def deliver
+  #  MessageWorker.perform_async(self.id.to_s)
+  #end
+
+
   scope :recipient, lambda { |recipient|
-    joins(:receipts).where('mailboxer_receipts.receiver_id' => recipient.id,'mailboxer_receipts.receiver_type' => recipient.class.base_class.to_s)
+    joins(:receipts).where('receipts.receiver_id' => recipient.id,'receipts.receiver_type' => recipient.class.base_class.to_s)
   }
   scope :with_object, lambda { |obj|
     where('notified_object_id' => obj.id,'notified_object_type' => obj.class.to_s)
   }
   scope :not_trashed, lambda {
-    joins(:receipts).where('mailboxer_receipts.trashed' => false)
+    joins(:receipts).where('receipts.trashed' => false)
   }
   scope :unread,  lambda {
-    joins(:receipts).where('mailboxer_receipts.is_read' => false)
+    joins(:receipts).where('receipts.is_read' => false)
   }
   scope :global, lambda { where(:global => true) }
-  scope :expired, lambda { where("mailboxer_notifications.expires < ?", Time.now) }
+  scope :expired, lambda { where("notifications.expires < ?", Time.now) }
   scope :unexpired, lambda {
-    where("mailboxer_notifications.expires is NULL OR mailboxer_notifications.expires > ?", Time.now)
+    where("notifications.expires is NULL OR notifications.expires > ?", Time.now)
   }
 
   include Concerns::ConfigurableMailer
@@ -33,7 +41,7 @@ class Mailboxer::Notification < ActiveRecord::Base
   class << self
     #Sends a Notification to all the recipients
     def notify_all(recipients,subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj = nil,sanitize_text = true,notification_code=nil,send_mail=true)
-      notification = Mailboxer::Notification.new({:body => body, :subject => subject, :lat => lat, :long => long, :markread => markread, :alert => alert, :badge => badge, :sound => sound, :schedule => schedule, :custom => custom, :token => token, :address => address, :ltoken => ltoken, :random => random, :mute => mute, :timed => timed, :area => area})
+      notification = Notification.new({:body => body, :subject => subject, :lat => lat, :long => long, :markread => markread, :alert => alert, :badge => badge, :sound => sound, :schedule => schedule, :custom => custom, :token => token, :address => address, :ltoken => ltoken, :random => random, :mute => mute, :timed => timed, :area => area})
       notification.recipients = recipients.respond_to?(:each) ? recipients : [recipients]
       notification.recipients = notification.recipients.uniq if recipients.respond_to?(:uniq)
       notification.notified_object = obj if obj.present?
@@ -45,7 +53,7 @@ class Mailboxer::Notification < ActiveRecord::Base
     #successful or +false+ if some error raised
     def successful_delivery? receipts
       case receipts
-      when Mailboxer::Receipt
+      when Receipt
         receipts.valid?
         receipts.errors.empty?
       when Array
@@ -81,7 +89,7 @@ class Mailboxer::Notification < ActiveRecord::Base
     temp_receipts = Array.new
     #Receiver receipts
     self.recipients.each do |r|
-      msg_receipt = Mailboxer::Receipt.new
+      msg_receipt = Receipt.new
       msg_receipt.notification = self
       msg_receipt.is_read = false
       msg_receipt.receiver = r
@@ -121,7 +129,7 @@ class Mailboxer::Notification < ActiveRecord::Base
 
   #Returns the receipt for the participant
   def receipt_for(participant)
-    Mailboxer::Receipt.notification(self).recipient(participant)
+    Receipt.notification(self).recipient(participant)
   end
 
   #Returns the receipt for the participant. Alias for receipt_for(participant)
