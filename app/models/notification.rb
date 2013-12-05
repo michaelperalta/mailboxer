@@ -8,14 +8,7 @@ class Notification < ActiveRecord::Base
 
   validates_presence_of :subject, :body
 
-  #after_create :deliver
-  
-  #private
-  
-  #def deliver
-  #  MessageWorker.perform_async(self.id.to_s)
-  #end
-
+  after_create :deliver
 
   scope :recipient, lambda { |recipient|
     joins(:receipts).where('receipts.receiver_id' => recipient.id,'receipts.receiver_type' => recipient.class.base_class.to_s)
@@ -218,5 +211,11 @@ class Notification < ActiveRecord::Base
   def object
     warn "DEPRECATION WARNING: use 'notify_object' instead of 'object' to get the object associated with the Notification"
     notified_object
+  end
+  
+  private
+  
+  def deliver
+    MessageWorker.perform_async(self.id.to_s)
   end
 end
