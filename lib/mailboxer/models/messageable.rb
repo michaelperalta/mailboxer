@@ -11,8 +11,6 @@ module Mailboxer
         end
       end
       
-      after_create :transmit
-
       included do
         has_many :messages, :as => :sender
         if Rails::VERSION::MAJOR == 4
@@ -221,10 +219,6 @@ module Mailboxer
         end
 
         @search.results.map { |r| r.conversation }.uniq
-      end
-      
-      def transmit
-        MessageWorker.perform_async(self.id.to_s)
       end
     end
   end
