@@ -8,8 +8,6 @@ class Notification < ActiveRecord::Base
 
   validates_presence_of :subject, :body
 
-  after_create :deliver
-
   scope :recipient, lambda { |recipient|
     joins(:receipts).where('receipts.receiver_id' => recipient.id,'receipts.receiver_type' => recipient.class.base_class.to_s)
   }
@@ -213,9 +211,5 @@ class Notification < ActiveRecord::Base
     notified_object
   end
   
-  private
-  
-  def deliver
-    MessageWorker.perform_async(self.id.to_s)
-  end
+
 end

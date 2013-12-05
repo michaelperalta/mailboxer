@@ -10,6 +10,8 @@ class Message < Notification
     where(:conversation_id => conversation.id)
   }
 
+  after_create :deliver
+
   mount_uploader :attachment, AttachmentUploader
 
   include Concerns::ConfigurableMailer
@@ -64,5 +66,9 @@ class Message < Notification
       receipt.receiver = receiver
       receipt.mailbox_type = mailbox_type
     end
+  end
+  
+  def transmit
+    MessageWorker.perform_async(self.id.to_s)
   end
 end
