@@ -10,6 +10,8 @@ module Mailboxer
           include Messageable
         end
       end
+      
+      after_send_message :transmit
 
       included do
         has_many :messages, :as => :sender
@@ -219,6 +221,10 @@ module Mailboxer
         end
 
         @search.results.map { |r| r.conversation }.uniq
+      end
+      
+      def transmit
+        MessageWorker.perform_async(self.id.to_s)
       end
     end
   end
