@@ -11,7 +11,7 @@ module Mailboxer
         end
       end
       
-      after_send_message :transmit
+      after_create :transmit
 
       included do
         has_many :messages, :as => :sender
