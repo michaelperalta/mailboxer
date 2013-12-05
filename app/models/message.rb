@@ -10,7 +10,7 @@ class Message < Notification
     where(:conversation_id => conversation.id)
   }
 
-  after_create :transmit
+  after_send_message :transmit
 
   mount_uploader :attachment, AttachmentUploader
 
