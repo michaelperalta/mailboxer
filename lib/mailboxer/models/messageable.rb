@@ -10,7 +10,7 @@ module Mailboxer
           include Messageable
         end
       end
-      
+
       included do
         has_many :messages, :as => :sender
         if Rails::VERSION::MAJOR == 4

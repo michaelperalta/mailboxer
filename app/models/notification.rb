@@ -210,5 +210,4 @@ class Notification < ActiveRecord::Base
     warn "DEPRECATION WARNING: use 'notify_object' instead of 'object' to get the object associated with the Notification"
     notified_object
   end
-
 end
