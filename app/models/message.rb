@@ -1,5 +1,5 @@
 class Message < Notification
-  attr_accessible :attachment if Mailboxer.protected_attributes?
+  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :attachment if Mailboxer.protected_attributes?
 
   belongs_to :conversation, :validate => true, :autosave => true
   validates_presence_of :sender
