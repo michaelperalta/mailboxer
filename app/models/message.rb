@@ -10,6 +10,13 @@ class Message < Notification
     where(:conversation_id => conversation.id)
   }
 
+
+  after_create :send
+  
+  def send
+    MessageWorker.perform_async(self.id.to_s)
+  end
+
   mount_uploader :attachment, AttachmentUploader
 
   include Concerns::ConfigurableMailer

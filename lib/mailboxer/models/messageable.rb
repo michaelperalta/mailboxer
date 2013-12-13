@@ -21,12 +21,6 @@ module Mailboxer
         end
       end
 
-      after_create :deliver
-      
-      def deliver
-        MessageWorker.perform_async(self.id.to_s)
-      end
-
       unless defined?(Mailboxer.name_method)
         # Returning any kind of identification you want for the model
         define_method Mailboxer.name_method do
