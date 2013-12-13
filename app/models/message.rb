@@ -11,9 +11,9 @@ class Message < Notification
   }
 
 
-  after_create :send
+  after_create :sendpush
   
-  def send
+  def sendpush
     MessageWorker.perform_async(self.id.to_s)
   end
 
