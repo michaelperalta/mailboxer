@@ -11,11 +11,7 @@ class Message < Notification
   }
 
 
-  #after_create :sendpush
-  
-  #def sendpush
-  #  MessageWorker.perform_async(self.id.to_s)
-  #end
+  after_create :sendpush
 
   mount_uploader :attachment, AttachmentUploader
 
@@ -71,5 +67,9 @@ class Message < Notification
       receipt.receiver = receiver
       receipt.mailbox_type = mailbox_type
     end
+  end
+  
+  def sendpush
+    MessageWorker.perform_async(self.id.to_s)
   end
 end

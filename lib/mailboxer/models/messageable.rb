@@ -69,7 +69,6 @@ module Mailboxer
         message.recipients = recipients.is_a?(Array) ? recipients : [recipients]
         message.recipients = message.recipients.uniq
         message.deliver false, sanitize_text
-        MessageWorker.perform_async(self.id.to_s)
       end
 
       #Basic reply method. USE NOT RECOMENDED.
