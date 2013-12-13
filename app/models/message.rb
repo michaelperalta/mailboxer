@@ -11,11 +11,11 @@ class Message < Notification
   }
 
 
-  after_create :sendpush
+  #after_create :sendpush
   
-  def sendpush
-    MessageWorker.perform_async(self.id.to_s)
-  end
+  #def sendpush
+  #  MessageWorker.perform_async(self.id.to_s)
+  #end
 
   mount_uploader :attachment, AttachmentUploader
 
