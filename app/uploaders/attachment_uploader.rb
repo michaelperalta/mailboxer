@@ -1,6 +1,5 @@
 class AttachmentUploader < CarrierWave::Uploader::Base
-  #storage :file
-  storage :attachment
+  storage :file
   
   def cache_dir
     "#{Rails.root}/tmp/uploads"
