@@ -1,6 +1,6 @@
 class Notification < ActiveRecord::Base
   attr_accessor :recipients
-  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :expires if Mailboxer.protected_attributes?
+  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :attachment, :expires if Mailboxer.protected_attributes?
 
   belongs_to :sender, :polymorphic => :true
   belongs_to :notified_object, :polymorphic => :true
@@ -31,7 +31,7 @@ class Notification < ActiveRecord::Base
   class << self
     #Sends a Notification to all the recipients
     def notify_all(recipients,subject,body, lat, long, markread, alert, badge, sound, schedule, custom, token, address, ltoken, random, mute, timed, area, obj = nil,sanitize_text = true,notification_code=nil,send_mail=true)
-      notification = Notification.new({:body => body, :subject => subject, :lat => lat, :long => long, :markread => markread, :alert => alert, :badge => badge, :sound => sound, :schedule => schedule, :custom => custom, :token => token, :address => address, :ltoken => ltoken, :random => random, :mute => mute, :timed => timed, :area => area})
+      notification = Notification.new({:body => body, :subject => subject, :lat => lat, :long => long, :markread => markread, :alert => alert, :badge => badge, :sound => sound, :schedule => schedule, :custom => custom, :token => token, :address => address, :ltoken => ltoken, :random => random, :mute => mute, :timed => timed, :area => area, :attachment => attachment})
       notification.recipients = recipients.respond_to?(:each) ? recipients : [recipients]
       notification.recipients = notification.recipients.uniq if recipients.respond_to?(:uniq)
       notification.notified_object = obj if obj.present?
