@@ -1,6 +1,6 @@
 class Notification < ActiveRecord::Base
   attr_accessor :recipients
-  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :attachment, :expires if Mailboxer.protected_attributes?
+  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :attachment, :file, :expires if Mailboxer.protected_attributes?
 
   belongs_to :sender, :polymorphic => :true
   belongs_to :notified_object, :polymorphic => :true
