@@ -26,13 +26,13 @@ class Notification < ActiveRecord::Base
     where("notifications.expires is NULL OR notifications.expires > ?", Time.now)
   }
 
-  has_attached_file :photo, :default_url => "/assets/images/rails.png",
-                            :storage => :s3,
-                            :bucket => 'drop_images',
-                            :s3_credentials => {
-                            :access_key_id => ENV['AKIAIBM66MYUFOJPFCYA'],
-                            :secret_access_key => ENV['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']
-                                         }
+  has_attached_file :photo, :default_url => "/assets/images/rails.png"#,
+                            #:storage => :s3,
+                            #:bucket => 'drop_images',
+                            #:s3_credentials => {
+                            #:access_key_id => ENV['AKIAIBM66MYUFOJPFCYA'],
+                            #:secret_access_key => ENV['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']
+                             #            }
 
   include Concerns::ConfigurableMailer
 
