@@ -1,5 +1,6 @@
 require 'carrierwave/orm/activerecord'
 class Message < Notification
+  attr_accessor :photo_file_name
   attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :file, :photo, :attachment if Mailboxer.protected_attributes?
 
   belongs_to :conversation, :validate => true, :autosave => true
