@@ -1,6 +1,6 @@
 class Notification < ActiveRecord::Base
   attr_accessor :recipients
-  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :attachment, :file, :expires if Mailboxer.protected_attributes?
+  attr_accessible :body, :subject, :lat, :long, :markread, :alert, :badge, :sound, :schedule, :custom, :token, :address, :ltoken, :random, :mute, :timed, :area, :global, :attachment, :file, :photo, :expires if Mailboxer.protected_attributes?
 
   belongs_to :sender, :polymorphic => :true
   belongs_to :notified_object, :polymorphic => :true
@@ -25,6 +25,14 @@ class Notification < ActiveRecord::Base
   scope :unexpired, lambda {
     where("notifications.expires is NULL OR notifications.expires > ?", Time.now)
   }
+
+  has_attached_file :photo, :default_url => "/assets/images/rails.png",
+                            :storage => :s3,
+                            :bucket => 'drop_images',
+                            :s3_credentials => {
+                            :access_key_id => ENV['AKIAIBM66MYUFOJPFCYA'],
+                            :secret_access_key => ENV['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']
+                                         }
 
   include Concerns::ConfigurableMailer
 
